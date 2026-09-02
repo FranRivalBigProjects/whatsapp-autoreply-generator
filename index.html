@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp Auto-Reply Message Generator</title>
+<meta name="description" content="Generate ready-to-use WhatsApp auto-reply and business away messages. Pick a message type and tone, fill in your details, and copy the result.">
+<meta name="google-site-verification" content="REPLACE_WITH_YOUR_VERIFICATION_CODE">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #0d0f12;
+  color: #d7dbe0;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.6;
+  padding: 24px 16px 60px 16px;
+}
+.wrap { max-width: 760px; margin: 0 auto; }
+h1 { font-size: 22px; color: #7ee787; margin-bottom: 6px; }
+.subtitle { color: #8b949e; font-size: 14px; margin-bottom: 24px; }
+.panel {
+  background: #14171a;
+  border: 1px solid #2a2f36;
+  border-radius: 6px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+.panel h2 { font-size: 15px; color: #58a6ff; margin-bottom: 12px; }
+label { display: block; font-size: 12px; color: #8b949e; margin: 10px 0 4px 0; }
+input[type="text"], select {
+  width: 100%;
+  background: #0a0c0e;
+  border: 1px solid #2a2f36;
+  border-radius: 4px;
+  color: #d7dbe0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  padding: 10px;
+}
+.row-2 { display: grid; grid-template-columns: 1fr; gap: 0; }
+@media (min-width: 560px) {
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+}
+.btn {
+  background: #238636;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  margin-right: 8px;
+  margin-top: 14px;
+}
+.btn.secondary { background: #21262d; border: 1px solid #2a2f36; }
+.bubble {
+  background: #1f2c24;
+  border: 1px solid #2f6b3a;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 13px;
+  color: #e6f2e8;
+  white-space: pre-wrap;
+  margin-top: 12px;
+}
+article { font-size: 13px; color: #a9b1bb; margin-top: 30px; }
+article h2 { font-size: 15px; color: #58a6ff; margin: 20px 0 8px 0; }
+article p { margin-bottom: 10px; }
+footer { text-align: center; font-size: 11px; color: #4a5158; margin-top: 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>WhatsApp Auto-Reply Message Generator</h1>
+<p class="subtitle">Pick a message type and tone, fill in your business details, and get a ready-to-paste auto-reply.</p>
+
+<div class="panel">
+<h2>1. Message Details</h2>
+<label>Business name</label>
+<input type="text" id="bizName" placeholder="Your Business" value="Your Business">
+<div class="row-2">
+<div>
+<label>Message type</label>
+<select id="msgType">
+<option value="away">Away / Outside Business Hours</option>
+<option value="welcome">Welcome / First Contact</option>
+<option value="order">Order Confirmation</option>
+<option value="holiday">Holiday Closure</option>
+<option value="faq">Common Questions Redirect</option>
+</select>
+</div>
+<div>
+<label>Tone</label>
+<select id="msgTone">
+<option value="formal">Formal</option>
+<option value="casual">Casual</option>
+</select>
+</div>
+</div>
+<div class="row-2">
+<div>
+<label>Business hours (for away message)</label>
+<input type="text" id="hours" placeholder="Mon-Fri 9am-6pm" value="Mon-Fri 9am-6pm">
+</div>
+<div>
+<label>Response time estimate</label>
+<input type="text" id="responseTime" placeholder="within 24 hours" value="within 24 hours">
+</div>
+</div>
+<label>Language</label>
+<select id="msgLang">
+<option value="en">English</option>
+<option value="es">Español</option>
+<option value="pt">Português</option>
+</select>
+<button class="btn" id="generateBtn">Generate</button>
+<button class="btn secondary" id="copyBtn">Copy</button>
+<div class="bubble" id="output"></div>
+</div>
+
+<article>
+<h2>Why Auto-Reply Messages Matter</h2>
+<p>An automatic WhatsApp reply sets expectations immediately, even when nobody is available to answer. Customers are far more likely to wait for a real response if they get instant confirmation that their message was received and roughly when to expect a follow-up.</p>
+<h2>Using These With WhatsApp Business</h2>
+<p>WhatsApp Business lets you set an Away Message and a Greeting Message directly in the app under Business Settings, or you can wire these templates into a chatbot flow if you are using the WhatsApp Business API.</p>
+</article>
+
+<footer>Client-side tool. Nothing you type here is stored or sent anywhere.</footer>
+</div>
+
+<script>
+var TEMPLATES = {
+  en: {
+    away: {
+      formal: "Thank you for contacting {biz}. We are currently outside our business hours ({hours}). We will get back to you {response}. We appreciate your patience.",
+      casual: "Hey! Thanks for reaching out to {biz}. We're closed right now ({hours}) but we'll reply {response}. Talk soon!"
+    },
+    welcome: {
+      formal: "Welcome to {biz}. Thank you for getting in touch. A member of our team will assist you shortly.",
+      casual: "Hey there! Welcome to {biz}. Thanks for messaging us, we'll be with you in just a bit."
+    },
+    order: {
+      formal: "Thank you for your order with {biz}. We have received your request and will confirm the details {response}.",
+      casual: "Got your order! Thanks for shopping with {biz}. We'll confirm everything {response}."
+    },
+    holiday: {
+      formal: "Thank you for contacting {biz}. We are currently closed for the holidays and will resume normal business hours soon. We will respond to your message {response}.",
+      casual: "Hey! {biz} is closed for the holidays right now. We'll get back to you {response} once we're back!"
+    },
+    faq: {
+      formal: "Thank you for your message. For quick answers to common questions, please visit our FAQ page. Otherwise, a team member from {biz} will respond {response}.",
+      casual: "Thanks for messaging {biz}! Check out our FAQ for quick answers, or hang tight, we'll reply {response}."
+    }
+  },
+  es: {
+    away: {
+      formal: "Gracias por contactar a {biz}. En este momento estamos fuera de nuestro horario de atencion ({hours}). Le responderemos {response}. Agradecemos su paciencia.",
+      casual: "Hola! Gracias por escribir a {biz}. Ahora mismo estamos cerrados ({hours}) pero te respondemos {response}. Nos vemos pronto!"
+    },
+    welcome: {
+      formal: "Bienvenido a {biz}. Gracias por comunicarse con nosotros. Un miembro de nuestro equipo lo atendera en breve.",
+      casual: "Hola! Bienvenido a {biz}. Gracias por escribirnos, ya te contestamos en un momento."
+    },
+    order: {
+      formal: "Gracias por su pedido en {biz}. Hemos recibido su solicitud y confirmaremos los detalles {response}.",
+      casual: "Recibimos tu pedido! Gracias por comprar en {biz}. Te confirmamos todo {response}."
+    },
+    holiday: {
+      formal: "Gracias por contactar a {biz}. Actualmente estamos cerrados por temporada vacacional y retomaremos nuestro horario habitual pronto. Responderemos su mensaje {response}.",
+      casual: "Hola! {biz} esta cerrado por vacaciones ahorita. Te respondemos {response} en cuanto regresemos!"
+    },
+    faq: {
+      formal: "Gracias por su mensaje. Para respuestas rapidas a preguntas frecuentes, visite nuestra pagina de FAQ. De lo contrario, un miembro de {biz} respondera {response}.",
+      casual: "Gracias por escribir a {biz}! Revisa nuestras preguntas frecuentes, o espera un poco, te respondemos {response}."
+    }
+  },
+  pt: {
+    away: {
+      formal: "Obrigado por entrar em contato com {biz}. No momento estamos fora do nosso horario de atendimento ({hours}). Responderemos {response}. Agradecemos a sua paciencia.",
+      casual: "Oi! Obrigado por chamar a {biz}. Estamos fechados agora ({hours}) mas respondemos {response}. Ate breve!"
+    },
+    welcome: {
+      formal: "Bem-vindo a {biz}. Obrigado por entrar em contato. Um membro da nossa equipe ira atende-lo em breve.",
+      casual: "Oi! Bem-vindo a {biz}. Obrigado por chamar, ja te respondemos."
+    },
+    order: {
+      formal: "Obrigado pelo seu pedido na {biz}. Recebemos sua solicitacao e confirmaremos os detalhes {response}.",
+      casual: "Recebemos seu pedido! Obrigado por comprar na {biz}. Confirmamos tudo {response}."
+    },
+    holiday: {
+      formal: "Obrigado por entrar em contato com {biz}. Estamos fechados temporariamente para o feriado e retomaremos o horario normal em breve. Responderemos sua mensagem {response}.",
+      casual: "Oi! A {biz} esta fechada para o feriado agora. Te respondemos {response} assim que voltarmos!"
+    },
+    faq: {
+      formal: "Obrigado pela sua mensagem. Para respostas rapidas as perguntas frequentes, visite nossa pagina de FAQ. Caso contrario, um membro da {biz} respondera {response}.",
+      casual: "Obrigado por chamar a {biz}! Confira nosso FAQ para respostas rapidas, ou aguarde, respondemos {response}."
+    }
+  }
+};
+
+function generateMessage() {
+  var biz = document.getElementById('bizName').value.trim() || 'Your Business';
+  var type = document.getElementById('msgType').value;
+  var tone = document.getElementById('msgTone').value;
+  var lang = document.getElementById('msgLang').value;
+  var hours = document.getElementById('hours').value.trim() || 'business hours';
+  var response = document.getElementById('responseTime').value.trim() || 'as soon as possible';
+
+  var template = TEMPLATES[lang][type][tone];
+  var message = template.split('{biz}').join(biz).split('{hours}').join(hours).split('{response}').join(response);
+  document.getElementById('output').innerHTML = message;
+}
+
+function copyOutput() {
+  var text = document.getElementById('output').innerText || document.getElementById('output').textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+  }
+}
+
+document.getElementById('generateBtn').addEventListener('click', generateMessage);
+document.getElementById('copyBtn').addEventListener('click', copyOutput);
+generateMessage();
+</script>
+</body>
+</html>
